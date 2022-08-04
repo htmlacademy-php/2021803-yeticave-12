@@ -1,7 +1,7 @@
 # Личный проект «YetiCave»
 
 * Студент: [Сергей Зайцев](https://up.htmlacademy.ru/php/12/user/2021803).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Пилипенко](https://htmlacademy.ru/profile/id93207).
 
 ---
 
