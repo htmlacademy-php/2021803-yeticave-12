@@ -42,11 +42,11 @@ $products = [
     ],
 ];
 
+//Функция форматирования цены
 function price_format($value)
 {
     return number_format(ceil($value), 0, '', ' ') . ' ₽';
 };
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
