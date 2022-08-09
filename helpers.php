@@ -143,4 +143,8 @@ function include_template($name, array $data = []) {
     return $result;
 }
 
-
+//Функция форматирования цены
+function price_format($price)
+{
+    return number_format(ceil($price), 0, '', ' ') . ' ₽';
+}
