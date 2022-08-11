@@ -38,7 +38,7 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?= price_format(htmlspecialchars($value['price'])); ?></span>
                         </div>
-                        <?php $time = remaining_time(htmlspecialchars($value['date_expiration']), date('H:i')); ?>
+                        <?php $time = remaining_time(htmlspecialchars($value['date_expiration'])); ?>
                         <div class="lot__timer timer
                             <?php if ($time[0] < 1) {
                                 echo 'timer--finishing';

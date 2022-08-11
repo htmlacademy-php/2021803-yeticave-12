@@ -7,9 +7,9 @@ function price_format($price)
 }
 
 //Функция перевода оставшегося времени в формат «ЧЧ: ММ»
-function remaining_time(string $closeTime, string $nowTime): array
+function remaining_time(string $closeTime): array
 {
-    $dt_diff = strtotime($closeTime) - strtotime($nowTime);
+    $dt_diff = strtotime($closeTime) - strtotime(date('H:i'));
     if (!is_date_valid($closeTime) || $dt_diff < 0) {
         return [0, 0];
     }

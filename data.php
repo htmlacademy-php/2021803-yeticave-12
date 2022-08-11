@@ -9,7 +9,7 @@ $products = [
         'category' => $categories[0],
         'price' => '10999',
         'gif' => 'img/lot-1.jpg',
-        'date_expiration' => '2022-08-11'
+        'date_expiration' => '2022-08-12'
     ],
     [
         'title' => 'DC Ply Mens 2016/2017 Snowboard',
