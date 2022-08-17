@@ -26,8 +26,8 @@ INSERT INTO lot (user_id,winner_id,category_id,created_date,finished_date,name,d
 
 /*ставки*/
 INSERT INTO bid (user_id,lot_id,created_date,price) VALUES
-('1','2','2022-04-27','160499'),
-('3','2','2022-05-01','160699');
+('1','2','2022-07-27','160499'),
+('3','2','2022-08-01','160699');
 
 /*Получить все категории*/
 SELECT * FROM category;
