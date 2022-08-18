@@ -46,3 +46,22 @@ function get_categories(mysqli $link)
     $sql = "SELECT * FROM category";
     return  get_query_sql_results($link, mysqli_query($link, $sql));
 }
+
+//Получение лота по его ID
+function get_lot_id(mysqli $link, int $lot_id): array
+{
+    $sql = "SELECT l.*, c.name as cat_name,IFNULL(MAX(b.price),l.initial_price) as max_price FROM lot l
+JOIN category c ON c.id=l.category_id
+LEFT JOIN bid b ON l.id=b.lot_id
+WHERE l.id= '" . $lot_id . "' 
+GROUP BY l.id";
+    return get_query_sql_results($link, mysqli_query($link, $sql));
+}
+//Получение списка лотов по категории
+function get_lot_category(mysqli $link, string $lots_category): array
+{
+    $sql = "SELECT l.*,c.name as name_category,c.symbol_code FROM lot l
+JOIN category c ON c.id=l.category_id
+WHERE c.symbol_code= '$lots_category'";
+    return get_query_sql_results($link, mysqli_query($link, $sql));
+}
