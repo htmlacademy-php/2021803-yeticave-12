@@ -9,7 +9,7 @@ function price_format($price)
 //Функция перевода оставшегося времени в формат «ЧЧ: ММ»
 function remaining_time(string $closeTime): array
 {
-    $dt_diff = strtotime($closeTime) - strtotime(date('Y-m-d'));
+    $dt_diff = strtotime($closeTime) - strtotime(date('Y-m-d H:i'));
     if (!is_date_valid($closeTime) || $dt_diff < 0) {
         return [0, 0];
     }
@@ -63,5 +63,13 @@ function get_lot_category(mysqli $link, string $lots_category): array
     $sql = "SELECT l.*,c.name as name_category,c.symbol_code FROM lot l
 JOIN category c ON c.id=l.category_id
 WHERE c.symbol_code= '$lots_category'";
+    return get_query_sql_results($link, mysqli_query($link, $sql));
+}
+
+//Получение категории по коду
+function get_categories_symbol_code(mysqli $link, string $lots_category): array
+{
+    $sql = "SELECT name FROM category
+WHERE symbol_code='$lots_category'";
     return get_query_sql_results($link, mysqli_query($link, $sql));
 }
