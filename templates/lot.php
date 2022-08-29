@@ -30,7 +30,7 @@
                 </div>
                 <div class="lot-item__right">
                     <div class="lot-item__state">
-                        <?php $time = remaining_time(htmlspecialchars($value['finished_date']), date('Y-m-d H:i:s')); ?>
+                        <?php $time = remaining_time(htmlspecialchars($value['finished_date'])); ?>
                         <div class="lot-item__timer timer
                             <?php if ($time[0] < 1) {
                                 echo 'timer--finishing';
@@ -46,5 +46,9 @@
                                 Мин. ставка <span><?= price_format(htmlspecialchars($value['max_price']) + htmlspecialchars($value['bid_step'])); ?></span>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </section>
 </main>
