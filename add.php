@@ -15,6 +15,7 @@ require_once 'functions.php';
 require_once 'init.php';
 
 $categories = get_categories($link);
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $lot = filter_input_array(INPUT_POST, [
@@ -34,24 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location:/404.php");
         }
     }
-
-    $page_content = include_template('add.php', ['categories' => $categories, 'errors' => $errors]);
-    $layout_content = include_template('layout.php', [
-        'content' => $page_content,
-        'categories' => $categories,
-        'title' => 'Добавление лота',
-        'user_name' => $user_name,
-        'is_auth' => $is_auth
-    ]);
-    print($layout_content);
-} else {
-    $page_content = include_template('add.php', ['categories' => $categories]);
-    $layout_content = include_template('layout.php', [
-        'content' => $page_content,
-        'categories' => $categories,
-        'title' => 'Добавление лота',
-        'user_name' => $user_name,
-        'is_auth' => $is_auth
-    ]);
-    print($layout_content);
 }
+$page_content = include_template('add.php', ['categories' => $categories, 'errors' => $errors]);
+$layout_content = include_template('layout.php', [
+    'content' => $page_content,
+    'categories' => $categories,
+    'title' => 'Добавление лота',
+    'user_name' => $user_name,
+    'is_auth' => $is_auth
+]);
+print($layout_content);
