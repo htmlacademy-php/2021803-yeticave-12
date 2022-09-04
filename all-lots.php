@@ -22,6 +22,10 @@ if (!$lots_category) {
 $categories = get_categories($link);
 $lot = get_lot_category($link, $lots_category);
 $category = get_categories_symbol_code($link, $lots_category);
+if (!$category) {
+    header("Location:/404.php");
+    die();
+}
 $page_content = include_template('all-lots.php', ['lot' => $lot, 'categories' => $categories, 'lots_category' => $lots_category]);
 $layout_content = include_template('layout.php', [
     'content' => $page_content,
