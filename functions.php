@@ -77,7 +77,7 @@ WHERE symbol_code='$lots_category'";
 //Получение значений из POST-запроса
 function getPostVal($value): ?string
 {
-    return $_POST[$value] ?? "";
+    return htmlspecialchars($_POST[$value] ?? "");
 }
 
 //Проверка заполненности 
@@ -163,9 +163,10 @@ function validate_date(string $finished_date): string
 }
 
 //Проверка шага ставки
-function validate_bid_step(string $bid_step): ?string
+function validate_bid_step(string $bid_step): ? string
 {
-    if (!ctype_digit($bid_step)) {
+    $bid_step=intval($bid_step);
+    if ($bid_step<=0) {
         return "Значение должно быть целым числом и больше нуля";
     }
     return null;
