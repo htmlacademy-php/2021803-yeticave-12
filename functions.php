@@ -81,11 +81,12 @@ function getPostVal($value): ?string
 }
 
 //Проверка заполненности 
-function validate_filled($name)
+function validate_filled($value) : ? string
 {
-    if (empty($_POST[$name])) {
+    if (empty($_POST[$value])) {
         return "Это поле должно быть заполнено";
     }
+    return null;
 }
 
 //Проверка категории
@@ -207,4 +208,59 @@ function validate_form_add_lot(array $lot, array $categories, $files): array
     }
     $errors['img_url'] = validate_img($files);
     return $errors;
+}
+
+//Поиск пользователей по email
+function get_user_email (mysqli $link, string $email): array 
+{
+    $sql = "SELECT email FROM user
+    WHERE email='$email'";
+        return get_query_sql_results($link, mysqli_query($link, $sql));
+}
+
+//Проверка email
+function validate_email (mysqli $link, string $email): ? string 
+{
+    if ($email === '') {
+        return "Поле необходимо заполнить";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Некорректно введен e-mail";
+    }
+    if (get_user_email($link, $email)) {
+        return "E-mail используется другим пользователем";
+    }
+
+    return null;
+}
+
+//Проверка полей формы регистрации
+function validate_signup_form(mysqli $link, array $signup_form): array
+{
+    $errors = [
+        'email' => validate_email($link, $signup_form['email']),
+        'password' => validate_filled($signup_form['password']),
+        'name' => validate_filled($signup_form['name']),
+        'contacts' => validate_filled($signup_form['contacts'])
+    ];
+
+    return $errors;
+}
+
+//Добавление нового пользователя
+function add_user(mysqli $link, array $signup_form): bool
+{
+    $signup_form['password'] = password_hash($signup_form['password'], PASSWORD_DEFAULT);
+
+    $sql = 'INSERT INTO user(created_date, email, password, name, contacts) VALUES (NOW(), ?, ?, ?, ?)';
+
+    $stmt = db_get_prepare_stmt($link, $sql, $signup_form);
+    $result = mysqli_stmt_execute($stmt);
+
+    if ($result) {
+        return true;
+    } else {
+        print("Ошибка MySQL: " . mysqli_error($link));
+        exit();
+    }
 }
