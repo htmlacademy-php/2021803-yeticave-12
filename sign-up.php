@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         add_user($link, $signup_form);
         header("Location: /login.php");
+        die();
     }
 }
 $content = include_template('sign-up.php', ['categories' => $categories, 'errors' => $errors]);

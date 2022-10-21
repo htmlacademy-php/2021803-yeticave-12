@@ -83,8 +83,8 @@ function getPostVal($value): ?string
 //Проверка заполненности 
 function validate_filled($value) : ? string
 {
-    if (empty($_POST[$value])) {
-        return "Это поле должно быть заполнено";
+    if (empty($value)) {
+        return "Поле необходимо заполнить";
     }
     return null;
 }
@@ -244,7 +244,7 @@ function validate_signup_form(mysqli $link, array $signup_form): array
         'contacts' => validate_filled($signup_form['contacts'])
     ];
 
-    return $errors;
+    return array_filter($errors);
 }
 
 //Добавление нового пользователя
@@ -252,7 +252,7 @@ function add_user(mysqli $link, array $signup_form): bool
 {
     $signup_form['password'] = password_hash($signup_form['password'], PASSWORD_DEFAULT);
 
-    $sql = 'INSERT INTO user(created_date, email, password, name, contacts) VALUES (NOW(), ?, ?, ?, ?)';
+    $sql = 'INSERT INTO user(email, password, name, contacts) VALUES (?, ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($link, $sql, $signup_form);
     $result = mysqli_stmt_execute($stmt);
