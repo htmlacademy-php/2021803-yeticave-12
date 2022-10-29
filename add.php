@@ -44,4 +44,12 @@ $layout_content = include_template('layout.php', [
     'user_name' => $user_name,
     'is_auth' => $is_auth
 ]);
+function debug_to_console($data) {
+    $output = $data;
+    if (is_array($output))
+        $output = implode(',', $output);
+
+    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
+debug_to_console($errors);
 print($layout_content);

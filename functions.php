@@ -77,15 +77,16 @@ WHERE symbol_code='$lots_category'";
 //Получение значений из POST-запроса
 function getPostVal($value): ?string
 {
-    return $_POST[$value] ?? "";
+    return htmlspecialchars($_POST[$value] ?? "");
 }
 
 //Проверка заполненности 
-function validate_filled($name)
+function validate_filled($value) : ? string
 {
-    if (empty($_POST[$name])) {
-        return "Это поле должно быть заполнено";
+    if (empty($value)) {
+        return "Поле необходимо заполнить";
     }
+    return null;
 }
 
 //Проверка категории
@@ -163,9 +164,10 @@ function validate_date(string $finished_date): string
 }
 
 //Проверка шага ставки
-function validate_bid_step(string $bid_step): ?string
+function validate_bid_step(string $bid_step): ? string
 {
-    if (!ctype_digit($bid_step)) {
+    $bid_step=intval($bid_step);
+    if ($bid_step<=0) {
         return "Значение должно быть целым числом и больше нуля";
     }
     return null;
@@ -206,4 +208,59 @@ function validate_form_add_lot(array $lot, array $categories, $files): array
     }
     $errors['img_url'] = validate_img($files);
     return $errors;
+}
+
+//Поиск пользователей по email
+function get_user_email (mysqli $link, string $email): array 
+{
+    $sql = "SELECT email FROM user
+    WHERE email='$email'";
+        return get_query_sql_results($link, mysqli_query($link, $sql));
+}
+
+//Проверка email
+function validate_email (mysqli $link, string $email): ? string 
+{
+    if ($email === '') {
+        return "Поле необходимо заполнить";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Некорректно введен e-mail";
+    }
+    if (get_user_email($link, $email)) {
+        return "E-mail используется другим пользователем";
+    }
+
+    return null;
+}
+
+//Проверка полей формы регистрации
+function validate_signup_form(mysqli $link, array $signup_form): array
+{
+    $errors = [
+        'email' => validate_email($link, $signup_form['email']),
+        'password' => validate_filled($signup_form['password']),
+        'name' => validate_filled($signup_form['name']),
+        'contacts' => validate_filled($signup_form['contacts'])
+    ];
+
+    return array_filter($errors);
+}
+
+//Добавление нового пользователя
+function add_user(mysqli $link, array $signup_form): bool
+{
+    $signup_form['password'] = password_hash($signup_form['password'], PASSWORD_DEFAULT);
+
+    $sql = 'INSERT INTO user(email, password, name, contacts) VALUES (?, ?, ?, ?)';
+
+    $stmt = db_get_prepare_stmt($link, $sql, $signup_form);
+    $result = mysqli_stmt_execute($stmt);
+
+    if ($result) {
+        return true;
+    } else {
+        print("Ошибка MySQL: " . mysqli_error($link));
+        exit();
+    }
 }
