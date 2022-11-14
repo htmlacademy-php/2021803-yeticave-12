@@ -11,7 +11,7 @@ INSERT INTO category (name , symbol_code) VALUES
 
 /* список пользователей*/
 INSERT INTO user (created_date,email,name,password,contacts) VALUES
-('2022-07-26','user1@gmail.com','Елена','password1','88311234561'),
+('2022-07-26','user1@gmail.com','Елена','$2a$12$cM0UF6WgFSDMatLriPjJWuO0X11dvwZi8mMxVQ.KeBhP5L65yAnSG','88311234561'),
 ('2022-07-27','user2@gmail.com','Сергей','password2','88311234562'),
 ('2022-08-01','user3@gmail.com','Андрей','password3','88311234563');
 

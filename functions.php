@@ -81,7 +81,7 @@ function getPostVal($value): ?string
 }
 
 //Проверка заполненности 
-function validate_filled($value) : ? string
+function validate_filled($value): ?string
 {
     if (empty($value)) {
         return "Поле необходимо заполнить";
@@ -164,10 +164,10 @@ function validate_date(string $finished_date): string
 }
 
 //Проверка шага ставки
-function validate_bid_step(string $bid_step): ? string
+function validate_bid_step(string $bid_step): ?string
 {
-    $bid_step=intval($bid_step);
-    if ($bid_step<=0) {
+    $bid_step = intval($bid_step);
+    if ($bid_step <= 0) {
         return "Значение должно быть целым числом и больше нуля";
     }
     return null;
@@ -211,15 +211,15 @@ function validate_form_add_lot(array $lot, array $categories, $files): array
 }
 
 //Поиск пользователей по email
-function get_user_email (mysqli $link, string $email): array 
+function get_user_by_email(mysqli $link, string $email): array
 {
-    $sql = "SELECT email FROM user
+    $sql = "SELECT * FROM user
     WHERE email='$email'";
-        return get_query_sql_results($link, mysqli_query($link, $sql));
+    return get_query_sql_results($link, mysqli_query($link, $sql));
 }
 
-//Проверка email
-function validate_email (mysqli $link, string $email): ? string 
+//Проверка email при регистрации
+function validate_email_signup(mysqli $link, string $email): ?string
 {
     if ($email === '') {
         return "Поле необходимо заполнить";
@@ -227,7 +227,7 @@ function validate_email (mysqli $link, string $email): ? string
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return "Некорректно введен e-mail";
     }
-    if (get_user_email($link, $email)) {
+    if (get_user_by_email($link, $email)) {
         return "E-mail используется другим пользователем";
     }
 
@@ -238,7 +238,7 @@ function validate_email (mysqli $link, string $email): ? string
 function validate_signup_form(mysqli $link, array $signup_form): array
 {
     $errors = [
-        'email' => validate_email($link, $signup_form['email']),
+        'email' => validate_email_signup($link, $signup_form['email']),
         'password' => validate_filled($signup_form['password']),
         'name' => validate_filled($signup_form['name']),
         'contacts' => validate_filled($signup_form['contacts'])
@@ -263,4 +263,79 @@ function add_user(mysqli $link, array $signup_form): bool
         print("Ошибка MySQL: " . mysqli_error($link));
         exit();
     }
+}
+
+//Аутентификация
+function authentication(mysqli $link, array $login_form): bool
+{
+    $user = get_user_by_email($link, $login_form['email']);
+    if ($user === null) {
+        return false;
+    }
+    debug_to_console($user);
+    $_SESSION['user_id'] = $user[0]['id'];
+    $_SESSION['name'] = $user[0]['name'];
+
+    return true;
+}
+
+//Получение id пользователя по сессии
+function get_user_id_session(): ?string
+{
+    return $_SESSION['user_id'] ?? null;
+}
+
+//Проверка на открытие сессии (наличие name в массиве SESSION)
+function check_session_name(): ?string
+{
+    return $_SESSION['name'] ?? null;
+}
+
+//Проверка email при входе
+function validate_email_login(string $email): ?string
+{
+    if ($email === '') {
+        return "Поле необходимо заполнить";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Некорректно введен e-mail";
+    }
+    return null;
+}
+
+//Проверка пароля при входе
+function validate_password(mysqli $link, string $email, string $password): ?string
+{
+    if ($password === '') {
+        return "Поле необходимо заполнить";
+    }
+    $user = get_user_by_email($link, $email);
+    if ($user === null) {
+        return "Неверный e-mail или пароль";
+    }
+   if(!password_verify($password,$user['0']['password'])){
+        return "Введен неверный пароль";
+   }
+
+    return null;
+}
+
+//Валидация формы входа
+function validate_login_form(mysqli $link, array $login_form): array
+{
+    $errors = [
+        'email' => validate_email_login($login_form['email']),
+        'password' => validate_password($link, $login_form['email'], $login_form['password'])
+    ];
+
+    return array_filter($errors);
+}
+
+function debug_to_console($data)
+{
+    $output = $data;
+    if (is_array($output))
+        $output = implode(',', $output);
+
+    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
 }

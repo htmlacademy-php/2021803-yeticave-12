@@ -3,14 +3,11 @@
 /**
  * @var array $lot
  * @var array $categories
- * @var string $user_name
- * @var bool $is_auth
  * @var mysqli $link
  * @var string $lots_category
  */
 
 require_once 'helpers.php';
-require_once 'data.php';
 require_once 'functions.php';
 require_once 'init.php';
 
@@ -31,7 +28,5 @@ $layout_content = include_template('layout.php', [
     'content' => $page_content,
     'categories' => $categories,
     'title' => $category[0]['name'],
-    'user_name' => $user_name,
-    'is_auth' => $is_auth
 ]);
 print($layout_content);
