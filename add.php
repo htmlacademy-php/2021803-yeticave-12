@@ -3,19 +3,21 @@
 /**
  * @var array $lot
  * @var array $categories
- * @var string $user_name
- * @var bool $is_auth
  * @var mysqli $link
  * @var array $errors
  */
 
 require_once 'helpers.php';
-require_once 'data.php';
 require_once 'functions.php';
 require_once 'init.php';
 
 $categories = get_categories($link);
 $errors = [];
+
+$user_id = get_user_id_session();
+if ($user_id === null) {
+    header("Location: /403.php");
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $lot = filter_input_array(INPUT_POST, [
@@ -41,15 +43,7 @@ $layout_content = include_template('layout.php', [
     'content' => $page_content,
     'categories' => $categories,
     'title' => 'Добавление лота',
-    'user_name' => $user_name,
-    'is_auth' => $is_auth
 ]);
-function debug_to_console($data) {
-    $output = $data;
-    if (is_array($output))
-        $output = implode(',', $output);
 
-    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
-}
 debug_to_console($errors);
 print($layout_content);
