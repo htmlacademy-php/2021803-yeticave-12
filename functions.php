@@ -272,7 +272,6 @@ function authentication(mysqli $link, array $login_form): bool
     if ($user === null) {
         return false;
     }
-    debug_to_console($user);
     $_SESSION['user_id'] = $user[0]['id'];
     $_SESSION['name'] = $user[0]['name'];
 
@@ -331,11 +330,46 @@ function validate_login_form(mysqli $link, array $login_form): array
     return array_filter($errors);
 }
 
-function debug_to_console($data)
-{
-    $output = $data;
-    if (is_array($output))
-        $output = implode(',', $output);
+//Поиск лотов
+function get_lot_search(mysqli $link, string $search, int $limit, int $offset): array {
+    $sql = "SELECT l.id, l.name AS lot_name, l.description, l.initial_price, l.img_url, l.finished_date, c.name AS cat_name
+            FROM lot l
+            JOIN category c ON l.category_id = c.id
+            WHERE  MATCH(l.name, l.description) AGAINST(? IN BOOLEAN MODE) ORDER BY l.created_date LIMIT ".$limit." OFFSET ".$offset."";
 
-    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+    $stmt = db_get_prepare_stmt($link, $sql, [$search]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
+
+//
+function get_count_lot_search(mysqli $link, string $search): int {
+
+    $sql = 'SELECT l.id, l.name AS lot_name, l.description, l.initial_price, l.img_url, l.finished_date, c.name AS cat_name
+            FROM lot l
+            JOIN category c ON l.category_id = c.id
+            WHERE  MATCH(l.name, l.description) AGAINST(? IN BOOLEAN MODE)';
+
+    $stmt = db_get_prepare_stmt($link, $sql, [$search]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return count(mysqli_fetch_all($result, MYSQLI_ASSOC));
+}
+
+
+function create_pagination(int $current, int $countLot, int $limit): array {
+  $countPage = (int)ceil($countLot/$limit); //Получаем кол-во страниц
+  $pages = range(1, $countPage); //Создаём массив страниц
+
+  $prev = ($current > 1) ? $current - 1 : $current;
+  $next = ($current < $countPage) ? $current + 1 : $current;
+
+  return ['prevPage' => $prev,
+          'nextPage' => $next,
+          'countPage' => $countPage,
+          'pages' => $pages,
+          'currentPage' => $current,
+          'lotLimit' => $limit
+         ];
 }

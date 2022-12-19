@@ -45,5 +45,4 @@ $layout_content = include_template('layout.php', [
     'title' => 'Добавление лота',
 ]);
 
-debug_to_console($errors);
 print($layout_content);
